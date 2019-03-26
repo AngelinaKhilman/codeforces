@@ -1,0 +1,175 @@
+ограничение по времени на тест1 секунда
+ограничение по памяти на тест256 мегабайт
+вводстандартный ввод
+выводстандартный вывод
+Алиса и Боб играют в шахматы на большом поле с размерами n×n. У Алисы осталась только одна фигура — ферзь, который находится в позиции (ax,ay), а у Боба остался только король, расположенный на (bx,by). Алиса считает, что поскольку её ферзь доминирует на поле, то победа уже её.
+
+Но Боб придумал хитрый план, который принесет ему победу, для этого ему нужно передвинуть его короля на позицию (cx,cy). Поскольку Алису отвлекает её чувство превосходства, она больше не передвигает её фигуру, поэтому только Боб может передвигать его фигуру.
+
+Боб победит, если он может передвинуть его короля с позиции (bx,by) на (cx,cy), не попадая под шах. Не забудьте, что король может передвигаться только в соседние 8 ячеек. Король находится под шахом, если находится в той же строке, столбце или диагонали, что и ферзь.
+
+Определите, сможет ли Боб победить или нет.
+
+Входные данные
+Первая строка содержит одно целое число n (3≤n≤1000) — размеры шахматного поля.
+
+Вторая строка содержит два целых числа ax и ay (1≤ax,ay≤n) — координаты ферзя Алисы.
+
+Третья строка содержит два целых числа bx и by (1≤bx,by≤n) — координаты короля Боба.
+
+Четвёртая строка содержит два целых числа cx и cy (1≤cx,cy≤n) — координаты позиции, куда Боб хочет передвинуть его короля.
+
+Гарантируется, что король Боба не находится под шахом и то, что конечная точка тоже не под шахом.
+
+Кроме того, король не находится на том же квадрате, что и ферзь (то есть ax≠bx или ay≠by), и конечная точка не совпадает ни с позицией ферзя (то есть cx≠ax или cy≠ay), ни с позицией короля (то есть cx≠bx или cy≠by).
+
+Выходные данные
+Выведите «YES» (без кавычек), если Боб может попасть из позиции (bx,by) в (cx,cy), не попадая под шах, иначе выведите «NO».
+
+Вы можете выводить каждую из букв в любом регистре (строчную или заглавную).
+
+
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const int INF = 1000000000;
+
+int main() {
+    int n, a1, a2, b1, b2, c1, c2, r;
+    cin >> n;
+    cin >> a1;
+    a1 = n - a1;
+    cin >> a2;
+    a2 = a2 - 1;
+    cin >> b1;
+    b1 = n - b1;
+    cin >> b2;
+    int start = b1 * n + (b2 - 1);
+    b2 = b2 - 1;
+    cin >> c1;
+    c1 = n - c1;
+    cin >> c2;
+    c2 = c2 - 1;
+    int finish = c1 * n + c2;
+
+    int ferz = a1 * n + a2;
+    int matrix[n][n];
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+           matrix[i][j] = 0;
+    }
+    }
+    int tmpa1 = a1, tmpa2 = a2;
+    while (tmpa1 >= 0 && tmpa2 >= 0){
+        matrix[tmpa1][tmpa2] = 1;
+        tmpa1 -= 1;
+        tmpa2 -= 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa1 < n  && tmpa2 < n){
+         matrix[tmpa1][tmpa2] = 1;
+        tmpa1 += 1;
+        tmpa2 += 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa1 >= 0 && tmpa2 < n){
+         matrix[tmpa1][tmpa2] = 1;
+        tmpa1 -= 1;
+        tmpa2 += 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa1 < n && tmpa2 >= 0)
+    {
+         matrix[tmpa1][tmpa2] = 1;
+        tmpa1 += 1;
+        tmpa2 -= 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa1 >= 0){
+        matrix[tmpa1][tmpa2] = 1;
+        tmpa1 -= 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa1 < n)
+    {
+        matrix[tmpa1][tmpa2] = 1;
+        tmpa1 += 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa2 < n)
+    {
+         matrix[tmpa1][tmpa2] = 1;
+        tmpa2 += 1;
+    }
+
+    tmpa1 = a1; tmpa2 = a2;
+    while (tmpa2 >= 0){
+         matrix[tmpa1][tmpa2] = 1;
+        tmpa2 -= 1;
+    }
+
+    vector <vector <pair <int, int> > > g(n * n);
+    for (int i = 0; i < n; i++){
+        for (int j = 0; j < n; j++){
+            if (i - 1 >= 0)
+                if (matrix[i - 1][j] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair((i - 1) * n + j, 1));
+            if (i - 1 >= 0 && j + 1 < n)
+                if (matrix[i - 1][j + 1] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair((i - 1) * n + (j + 1), 1));
+            if (j + 1 < n)
+                if (matrix[i][j + 1] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair(i * n + (j + 1), 1));
+            if (i + 1 < n && j + 1 < n)
+                if (matrix[i + 1][j + 1] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair((i + 1) * n + (j + 1), 1));
+            if (i + 1 < n)
+                if (matrix[i + 1][j] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair((i + 1) * n + j, 1));
+            if (i + 1 < n && j - 1 >= 0)
+                if (matrix[i + 1][j - 1] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair((i + 1) * n + (j - 1), 1));
+            if (j - 1 >= 0)
+                if (matrix[i][j - 1] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair(i * n + (j - 1), 1));
+            if (j - 1 >= 0 && i - 1 >= 0)
+                if(matrix[i - 1][j - 1] != 1 && matrix[i][j] != 1)
+                    g[i * n + j].push_back(make_pair((i - 1) * n + (j - 1), 1));
+
+
+        }
+    }
+
+    vector <int> d(n * n, INF);
+    d[start] = 0;
+    priority_queue <pair <int, int> > q;
+    q.push(make_pair(0, start));
+    while (!q.empty()){
+        int v = q.top().second, cur_d = -q.top().first;
+        q.pop();
+        if (cur_d > d[v])
+            continue;
+        for (size_t j = 0; j < g[v].size(); j++){
+            int to = g[v][j].first, len = g[v][j].second;
+            if (d[v] + len < d[to]){
+                d[to] = d[v] + len;
+                q.push(make_pair(-d[to], to));
+            }
+        }
+    }
+
+    if (d[finish] != INF)
+        cout << "YES";
+    else
+        cout << "NO";
+
+    return 0;
+}
