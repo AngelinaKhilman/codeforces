@@ -1,0 +1,76 @@
+ограничение по времени на тест1 second
+ограничение по памяти на тест64 megabytes
+вводстандартный ввод
+выводстандартный вывод
+Задан неориентированный взвешенный граф, вершины которого пронумерованы от 1 до n. Ваша задача найти кратчайший путь из вершины 1 в вершину n.
+
+Входные данные
+В первой строке содержатся целые числа n и m (2 ≤ n ≤ 105, 0 ≤ m ≤ 105), где n — количество вершин, а m — количество ребер в графе. Далее в m строках содержатся сами ребра, по одному в строке. Каждое ребро задается тремя числами ai, bi, wi (1 ≤ ai, bi ≤ n, 1 ≤ wi ≤ 106), где ai, bi — это концы ребра, а wi — его длина.
+
+Граф может содержать кратные ребра и петли.
+
+Выходные данные
+Выведите число -1 если пути нет или сам кратчайший путь, если он существует.
+
+
+
+#include<bits/stdc++.h>
+
+using namespace std;
+
+const long long INF = 100000000000000000;
+
+int main() {
+
+    int n, m, f, s, w;
+    cin >> n;
+    cin >> m;
+
+    vector <vector <pair <int, int> > > g(n);
+
+    for (int i = 0; i < m; i++){
+        cin >> f;
+        cin >> s;
+        cin >> w;
+        g[f - 1].push_back(make_pair(s - 1, w));
+        g[s - 1].push_back(make_pair(f - 1, w));
+    }
+
+    vector <long long> d(n, INF), p (n);
+    for (int i = 0; i < n; i++){
+        p[i] = -1;
+    }
+    d[0] = 0;
+    priority_queue <pair <long long, int> > q;
+    q.push(make_pair(0, 0));
+    while (!q.empty()){
+        int v = q.top().second;
+        long long cur_d = 1LL * (-q.top().first);
+        q.pop();
+        if (cur_d > d[v])
+            continue;
+        for (size_t j = 0; j < g[v].size(); j++){
+            int to = g[v][j].first, len = g[v][j].second;
+            if (1LL * d[v] + len < 1LL * (d[to])){
+                d[to] = 1LL * d[v] + len;
+                p[to] = v;
+                q.push(make_pair(1LL * (-d[to]), to));
+            }
+        }
+    }
+
+    if (d[n - 1] == INF){
+        cout << -1 << "\n";
+    }
+    else{
+        vector<int> path;
+        for (int v=n - 1; v!=0; v=p[v])
+            path.push_back (v + 1);
+        path.push_back (1);
+        reverse (path.begin(), path.end());
+        for (size_t i = 0; i < path.size(); i++)
+            cout << path[i] << " ";
+    }
+
+    return 0;
+}
